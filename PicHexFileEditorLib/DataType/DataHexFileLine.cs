@@ -10,8 +10,9 @@ namespace PicHexFileEditorLib.DataType
 {
     public class DataHexFileLine
     {
-        public DataHexFileLine(String lineString)
+        public DataHexFileLine(int lineIndex, String lineString)
         {
+            this.lineIndex = lineIndex;
             this.lineString = lineString;
             lineDataCount = (byte) StaticUtilityClass.getLineDataLength(lineString.Substring(1, 2));
             lineDataAddress = (UInt16)StaticUtilityClass.getLineDataLength(lineString.Substring(3, 4));
@@ -25,6 +26,7 @@ namespace PicHexFileEditorLib.DataType
                 lineDatas.Add(data);
             }
         }
+        public int          lineIndex { get; private set; }
         public String       lineString { set; get; }
         public String       lineDatasString { set; get; }
 

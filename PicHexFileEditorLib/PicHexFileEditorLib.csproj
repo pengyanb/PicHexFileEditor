@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -39,7 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataType\DataFoundStringInfo.cs" />
     <Compile Include="DataType\DataHexFileLine.cs" />
+    <Compile Include="DataType\SynchronizedRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Helper\PicHexHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticUtility\StaticUtility.cs" />
