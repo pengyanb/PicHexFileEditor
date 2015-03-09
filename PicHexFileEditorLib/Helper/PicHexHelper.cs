@@ -14,6 +14,7 @@ namespace PicHexFileEditorLib
         //private String hexFilePath;
         private String hexDataString;
         public List<DataHexFileLine> dataHexFileLineList { get; private set; }
+        public List<DataFoundStringInfo> dataFoundStringInfoList { get; private set; }
         #endregion
 
         #region Constructor
@@ -58,20 +59,20 @@ namespace PicHexFileEditorLib
         #endregion
 
         #region searchForString
-        public List<DataFoundStringInfo> searchForString(string string2SearchFor)
+        public void searchForString(string string2SearchFor)
         {
             List<int> indexList  = StaticUtility.StaticUtilityClass.searchForString(hexDataString, string2SearchFor);
-            List<DataFoundStringInfo> dataFoundStringInfoList = new List<DataFoundStringInfo>();
+            dataFoundStringInfoList = new List<DataFoundStringInfo>();
             foreach(int index in indexList)
             {
                 int indexInFile = 0;
-                Console.WriteLine("Helper Found: " + hexDataString.Substring(index, string2SearchFor.Length) + " at FileIndex: " + index);
+                //Console.WriteLine("Helper Found: " + hexDataString.Substring(index, string2SearchFor.Length) + " at FileIndex: " + index);
                 int lineIndex = 0;
-                while(indexInFile < index)
+                while(indexInFile < index)  //each byte is 0x00 in string, take two characters
                 {
-                    if(indexInFile + dataHexFileLineList.ElementAt(lineIndex).lineDataCount < index)
+                    if(indexInFile + (dataHexFileLineList.ElementAt(lineIndex).lineDataCount * 2)< index)
                     {
-                        indexInFile += dataHexFileLineList.ElementAt(lineIndex).lineDataCount;
+                        indexInFile += (dataHexFileLineList.ElementAt(lineIndex).lineDataCount * 2);
                         lineIndex++;
                     }
                     else
@@ -82,8 +83,12 @@ namespace PicHexFileEditorLib
                     }
                 }
             }
-            return dataFoundStringInfoList;
         } 
         #endregion
+
+        public Boolean replaceWithString(String replaceString, int index)
+        {
+            return false;
+        }
     }
 }
