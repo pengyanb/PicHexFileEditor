@@ -41,6 +41,9 @@ namespace PicHexFileEditorDemo
             openFileDialog1.Title = "Select a PIC hex file";
             openFileDialog1.Filter = "Hex File (.hex)|*.hex";
             openFileDialog1.FileName = "";
+
+            saveFileDialog1.InitialDirectory = Directory.GetCurrentDirectory();
+            saveFileDialog1.Filter = "Hex File (.hex)|*.hex";
         } 
         #endregion
 
@@ -54,36 +57,43 @@ namespace PicHexFileEditorDemo
                 Boolean result = await picHexHelper.init(openFileDialog1.FileName);
                 if(result)
                 {
-                    List<DataHexFileLine> dataHexFileLineList = picHexHelper.dataHexFileLineList;
-                    string lineAttributeString = "";
-                    string lineContentString = "";
-                    string lineChecksumString = "";
-                    for(int i=0; i<dataHexFileLineList.Count; i++)
-                    {
-                        DataHexFileLine dataHexFileLine = dataHexFileLineList.ElementAt(i);
-                        //Line      DataCount Address Type
-                        lineAttributeString += String.Format("{0,-6}:{1, 13:X2} {2, 7:X4} {3, 4:X2}\n", 
-                            dataHexFileLine.lineIndex,
-                            dataHexFileLine.lineDataCount,
-                            dataHexFileLine.lineDataAddress,
-                            dataHexFileLine.lineDataType);
-                        //D0   D1   D2   D3   D4   D5   D6   D7   D8   D9   D10  D11  D12  D13  D14  D15
-                        lineContentString += dataHexFileLine.lineDatasString + "\n";
-                        lineChecksumString += String.Format("{0:X2}\n", dataHexFileLine.lineChecksum);
-                    }
-                    richTextBox1.Text = lineAttributeString;
-                    richTextBox2.Text = lineContentString;
-                    richTextBox3.Text = lineChecksumString;
+                    displayHexFileDetails(picHexHelper.dataHexFileLineList);
                     button2.Enabled = true;
                 }
             }
         } 
         #endregion
 
+        #region displayHexFileDetails
+        private void displayHexFileDetails(List<DataHexFileLine> dataHexFileLineList)
+        {
+            string lineAttributeString = "";
+            string lineContentString = "";
+            string lineChecksumString = "";
+            for (int i = 0; i < dataHexFileLineList.Count; i++)
+            {
+                DataHexFileLine dataHexFileLine = dataHexFileLineList.ElementAt(i);
+                //Line      DataCount Address Type
+                lineAttributeString += String.Format("{0,-6}:{1, 13:X2} {2, 7:X4} {3, 4:X2}\n",
+                    dataHexFileLine.lineIndex,
+                    dataHexFileLine.lineDataCount,
+                    dataHexFileLine.lineDataAddress,
+                    dataHexFileLine.lineDataType);
+                //D0   D1   D2   D3   D4   D5   D6   D7   D8   D9   D10  D11  D12  D13  D14  D15
+                lineContentString += dataHexFileLine.lineDatasString + "\n";
+                lineChecksumString += String.Format("{0:X2}\n", dataHexFileLine.lineChecksum);
+            }
+            richTextBox1.Text = lineAttributeString;
+            richTextBox2.Text = lineContentString;
+            richTextBox3.Text = lineChecksumString;
+        } 
+        #endregion
+
         #region button2_Click [Search]
         private void button2_Click(object sender, EventArgs e)
         {
-            
+            if ((textBox2.Text.Length % 2) != 0)
+                textBox2.Text = textBox2.Text + "0";
             List<String> comboBoxList = new List<string>();
             if (picHexHelper != null)
             {
@@ -118,6 +128,7 @@ namespace PicHexFileEditorDemo
         #region button3_Click [Replace]
         private void button3_Click(object sender, EventArgs e)
         {
+            Boolean result = false;
             if(textBox2.Text.Length > textBox4.Text.Length)
             {
                 DialogResult dialogResult = MessageBox.Show(this, "Replacing with text that shorter than original. Append with spaces?", "Warnning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
@@ -127,7 +138,7 @@ namespace PicHexFileEditorDemo
                     for(int i = textBox4.Text.Length; i<textBox2.Text.Length; i+=2)
                     {
                         replaceString += "20";
-                        picHexHelper.replaceWithString(replaceString, comboBox1.SelectedIndex);
+                        result = picHexHelper.replaceWithStringAtFoundIndex(replaceString, comboBox1.SelectedIndex);
                     }
                 }
             }
@@ -137,12 +148,41 @@ namespace PicHexFileEditorDemo
                 if (dialogResult == DialogResult.OK)
                 {
                     String replaceString = textBox4.Text.Substring(0, textBox2.Text.Length);
-                    picHexHelper.replaceWithString(replaceString, comboBox1.SelectedIndex);
+                    result = picHexHelper.replaceWithStringAtFoundIndex(replaceString, comboBox1.SelectedIndex);
                 }
             }
             else
             {
-                picHexHelper.replaceWithString(textBox4.Text, comboBox1.SelectedIndex);
+                result = picHexHelper.replaceWithStringAtFoundIndex(textBox4.Text, comboBox1.SelectedIndex);
+                //DataFoundStringInfo dataFoundStringInfo = picHexHelper.dataFoundStringInfoList.ElementAt(comboBox1.SelectedIndex);
+                //DataHexFileLine dataHexFileLine = picHexHelper.dataHexFileLineList.ElementAt(dataFoundStringInfo.lineIndex);
+                //Console.WriteLine(dataHexFileLine.lineString);
+            }
+            if(result)
+            {
+                button4.Enabled = true;
+                displayHexFileDetails(picHexHelper.dataHexFileLineList);
+            }
+        } 
+        #endregion
+
+        #region button4_Click [Save] 
+        private void button4_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.FileName = String.Format("ModifiedHex_{0:yyyy}_{0:MM}_{0:dd}_{0:hh}_{0:mm}_{0:ss}", DateTime.Now);
+            DialogResult dialogResult = saveFileDialog1.ShowDialog();
+            if(dialogResult == DialogResult.OK)
+            {
+                String filePath = saveFileDialog1.FileName;
+                //Console.WriteLine(filePath);
+                if(picHexHelper.saveModifiedHexToFile(filePath))
+                {
+                    MessageBox.Show("File saved to: " + filePath, "Succeed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Error occured", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         } 
         #endregion
@@ -263,7 +303,6 @@ namespace PicHexFileEditorDemo
             textBox4.Enabled = radioButton4.Checked;
         } 
         #endregion
-
 
     }
 }

@@ -14,15 +14,15 @@ namespace PicHexFileEditorLib.DataType
         {
             this.lineIndex = lineIndex;
             this.lineString = lineString;
-            lineDataCount = (byte) StaticUtilityClass.getLineDataLength(lineString.Substring(1, 2));
-            lineDataAddress = (UInt16)StaticUtilityClass.getLineDataLength(lineString.Substring(3, 4));
-            lineDataType = (byte)StaticUtilityClass.getLineDataLength(lineString.Substring(7, 2));
-            lineChecksum = (byte)StaticUtilityClass.getLineDataLength(lineString.Substring(lineString.Length - 2, 2));
+            lineDataCount = (byte) StaticUtilityClass.convertStringToHexValue(lineString.Substring(1, 2));
+            lineDataAddress = (UInt16)StaticUtilityClass.convertStringToHexValue(lineString.Substring(3, 4));
+            lineDataType = (byte)StaticUtilityClass.convertStringToHexValue(lineString.Substring(7, 2));
+            lineChecksum = (byte)StaticUtilityClass.convertStringToHexValue(lineString.Substring(lineString.Length - 2, 2));
             lineDatasString = lineString.Substring(9, lineDataCount*2);
             lineDatas = new List<byte>();
             for(int i=0; i<lineDataCount; i++)
             {
-                byte data = (byte) StaticUtilityClass.getLineDataLength(lineDatasString.Substring(i*2, 2));
+                byte data = (byte) StaticUtilityClass.convertStringToHexValue(lineDatasString.Substring(i*2, 2));
                 lineDatas.Add(data);
             }
         }

@@ -9,7 +9,7 @@ namespace PicHexFileEditorLib.StaticUtility
     public static class StaticUtilityClass
     {
         #region getLineDataLength
-        public static int getLineDataLength(String inputString)
+        public static int convertStringToHexValue(String inputString)
         {
             return Convert.ToInt32(inputString, 16);
         } 
