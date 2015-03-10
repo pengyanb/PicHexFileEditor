@@ -121,27 +121,35 @@ namespace PicHexFileEditorLib
             Boolean result = false;
             try
             {
-                if (index < dataFoundStringInfoList.Count)  //replace indivial
+                if (index < dataFoundStringInfoList.Count)  //replace individual
                 {
                     DataFoundStringInfo dataFoundStringInfo = dataFoundStringInfoList.ElementAt(index);
-                    DataHexFileLine dataHexFileLine = dataHexFileLineList.ElementAt(dataFoundStringInfo.lineIndex);
-                    //Console.WriteLine("Old: " +dataHexFileLine.lineString);
-                    if ((dataFoundStringInfo.charIndex + string2SearchFor.Length) <= (dataHexFileLine.lineDatas.Count * 2))  //in same line
+
+                    int lineIndex = dataFoundStringInfo.lineIndex;
+                    DataHexFileLine dataHexFileLine1 = dataHexFileLineList.ElementAt(lineIndex);
+                    int lineCharStartIndex = dataFoundStringInfo.charIndex;
+                    int subStringStartIndex = 0;
+                    int lineCapacity = dataHexFileLine1.lineDatasString.Length - lineCharStartIndex;
+
+                    if (lineCapacity >= replaceString.Length)
                     {
-                        replaceHexFileLineWithString(replaceString, dataFoundStringInfo.charIndex, ref dataHexFileLine);
-                        //Console.WriteLine("New: " + dataHexFileLine.lineString);
+                        replaceHexFileLineWithString(replaceString, lineCharStartIndex, ref dataHexFileLine1);
                     }
-                    else //in two lines
+                    else
                     {
-                        DataHexFileLine dataHexFileLine2 = dataHexFileLineList.ElementAt(dataFoundStringInfo.lineIndex + 1);
-                        String subReplaceString1 = replaceString.Substring(0, dataHexFileLine.lineDatasString.Length - dataFoundStringInfo.charIndex);
-                        String subReplaceString2 = replaceString.Substring(subReplaceString1.Length , replaceString.Length - subReplaceString1.Length);
-                        //Console.WriteLine("Old1: " + dataHexFileLine.lineString);
-                        //Console.WriteLine("Old2: " + dataHexFileLine2.lineString);
-                        replaceHexFileLineWithString(subReplaceString1, dataFoundStringInfo.charIndex, ref dataHexFileLine);
-                        replaceHexFileLineWithString(subReplaceString2, 0, ref dataHexFileLine2);
-                        //Console.WriteLine("New1: " + dataHexFileLine.lineString);
-                        //Console.WriteLine("New2: " + dataHexFileLine2.lineString);
+                        String subReplaceString = "";
+                        while ((replaceString.Length - subStringStartIndex) > lineCapacity)
+                        {
+                            subReplaceString = replaceString.Substring(subStringStartIndex, lineCapacity);
+                            replaceHexFileLineWithString(subReplaceString, lineCharStartIndex, ref dataHexFileLine1);
+                            lineCharStartIndex = 0;
+                            subStringStartIndex += subReplaceString.Length;
+                            lineIndex++;
+                            dataHexFileLine1 = dataHexFileLineList.ElementAt(lineIndex);
+                            lineCapacity = dataHexFileLine1.lineDatasString.Length - lineCharStartIndex;
+                        }
+                        subReplaceString = replaceString.Substring(subStringStartIndex, replaceString.Length - subStringStartIndex);
+                        replaceHexFileLineWithString(subReplaceString, 0, ref dataHexFileLine1);
                     }
                     result = true;
                 }
@@ -150,20 +158,32 @@ namespace PicHexFileEditorLib
                     for (int i = 0; i < dataFoundStringInfoList.Count; i++)
                     {
                         DataFoundStringInfo dataFoundStringInfo = dataFoundStringInfoList.ElementAt(i);
-                        DataHexFileLine dataHexFileLine = dataHexFileLineList.ElementAt(dataFoundStringInfo.lineIndex);
-                        //Console.WriteLine("Old: " +dataHexFileLine.lineString);
-                        if ((dataFoundStringInfo.charIndex + string2SearchFor.Length) <= (dataHexFileLine.lineDatas.Count * 2))  //in same line
+
+                        int lineIndex = dataFoundStringInfo.lineIndex;
+                        DataHexFileLine dataHexFileLine1 = dataHexFileLineList.ElementAt(lineIndex);
+                        int lineCharStartIndex = dataFoundStringInfo.charIndex;
+                        int subStringStartIndex = 0;
+                        int lineCapacity = dataHexFileLine1.lineDatasString.Length - lineCharStartIndex;
+
+                        if (lineCapacity >= replaceString.Length)
                         {
-                            replaceHexFileLineWithString(replaceString, dataFoundStringInfo.charIndex, ref dataHexFileLine);
-                            //Console.WriteLine("New: " + dataHexFileLine.lineString);
+                            replaceHexFileLineWithString(replaceString, lineCharStartIndex, ref dataHexFileLine1);
                         }
-                        else //in two lines
+                        else
                         {
-                            DataHexFileLine dataHexFileLine2 = dataHexFileLineList.ElementAt(dataFoundStringInfo.lineIndex + 1);
-                            String subReplaceString1 = replaceString.Substring(0, dataHexFileLine.lineDatasString.Length - dataFoundStringInfo.charIndex);
-                            String subReplaceString2 = replaceString.Substring(subReplaceString1.Length, replaceString.Length - subReplaceString1.Length);
-                            replaceHexFileLineWithString(subReplaceString1, dataFoundStringInfo.charIndex, ref dataHexFileLine);
-                            replaceHexFileLineWithString(subReplaceString2, 0, ref dataHexFileLine2);
+                            String subReplaceString = "";
+                            while ((replaceString.Length - subStringStartIndex) > lineCapacity)
+                            {
+                                subReplaceString = replaceString.Substring(subStringStartIndex, lineCapacity);
+                                replaceHexFileLineWithString(subReplaceString, lineCharStartIndex, ref dataHexFileLine1);
+                                lineCharStartIndex = 0;
+                                subStringStartIndex += subReplaceString.Length;
+                                lineIndex++;
+                                dataHexFileLine1 = dataHexFileLineList.ElementAt(lineIndex);
+                                lineCapacity = dataHexFileLine1.lineDatasString.Length - lineCharStartIndex;
+                            }
+                            subReplaceString = replaceString.Substring(subStringStartIndex, replaceString.Length - subStringStartIndex);
+                            replaceHexFileLineWithString(subReplaceString, 0, ref dataHexFileLine1);
                         }
                     }
                     result = true;
