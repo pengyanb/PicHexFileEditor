@@ -1,4 +1,4 @@
-# PicHexFileEditor (Visual Studio 2013, C#)
+# PicHexFileEditor (Created in Visual Studio 2013, C#)
 Edit PIC microcontroller hex file directly. 
 No need to rebuild the entire project. 
 
