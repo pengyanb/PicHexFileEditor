@@ -162,6 +162,19 @@ namespace PicHexFileEditorDemo
             {
                 button4.Enabled = true;
                 displayHexFileDetails(picHexHelper.dataHexFileLineList);
+                if(comboBox1.Text.StartsWith("Line"))
+                {
+                    //Console.WriteLine("RichTextBox2 refreshed - trying to re-select");
+                    DataFoundStringInfo dataFoundStringInfo = dataFoundStringInfoList.ElementAt(comboBox1.SelectedIndex);
+                    int richTextBoxLine = dataFoundStringInfo.lineIndex;
+                    richTextBox2.SelectionStart = richTextBox2.Find(richTextBox2.Lines[richTextBoxLine]) + dataFoundStringInfo.charIndex;
+                    int selectionLength = textBox2.Text.Length;
+                    if (dataFoundStringInfo.charIndex + selectionLength > picHexHelper.dataHexFileLineList.ElementAt(dataFoundStringInfo.lineIndex).lineDataCount * 2)
+                        selectionLength++;
+                    richTextBox2.SelectionLength = selectionLength;
+                    richTextBox2.SelectionBackColor = Color.RoyalBlue;
+                    richTextBox2.ScrollToCaret();
+                }
             }
         } 
         #endregion
@@ -190,11 +203,11 @@ namespace PicHexFileEditorDemo
         #region comboBox1_SelectedIndexChanged
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Console.WriteLine("ComboBox1_SelectionChangeCommitted");
-            Console.WriteLine(comboBox1.Text);
+            //Console.WriteLine("ComboBox1_SelectionChangeCommitted");
+            //Console.WriteLine(comboBox1.Text);
             if (comboBox1.Text.StartsWith("Line"))
             {
-                Console.WriteLine("Combo Box item start with line");
+                //Console.WriteLine("Combo Box item start with line");
                 DataFoundStringInfo dataFoundStringInfo = dataFoundStringInfoList.ElementAt(comboBox1.SelectedIndex);
                 int richTextBoxLine = dataFoundStringInfo.lineIndex;
 
